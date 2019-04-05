@@ -1,5 +1,3 @@
-@[TOC](目录)
-
 # 需求描述
 
 抓取**拉勾网**“北京”“数据分析师”30页职位详情数据存入 MySQL 数据库
@@ -26,6 +24,7 @@
 
 ># URL示例
 >**搜索页**示例：https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B8%88?city=%E5%8C%97%E4%BA%AC&cl=false&fromSearch=true&labelWords=&suginput=
+
 >**详情页**示例：https://www.lagou.com/jobs/5496895.html
 
 
@@ -47,7 +46,7 @@
 - [ ] 3.直接用 pymysql 操作数据库，不必生成 sql 文件再手动导入
 - [ ] 4.等待时间很长，考虑多线程请求详情页 url 加速（10个一组应该很容易实现）
 - [ ] 5.不显示启动浏览器时的 DevTools listening on ws://xxx/devtools/browser/ 日志（影响整体输出，不爽但又暂时干不掉）
->优化更新后的代码会在GitHub上展示，敬请期待
+
 
 # 后记
 第一篇项目博文，代码和行文有欠妥之处还请各路大神斧正，Thanks♪
