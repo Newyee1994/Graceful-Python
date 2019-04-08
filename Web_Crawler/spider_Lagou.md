@@ -1,3 +1,6 @@
+>代码见 [spider_Lagou.py](https://github.com/Newyee1994/Graceful-Python/blob/master/Web_Crawler/spider_Lagou.py) 文件
+---
+
 # 需求描述
 
 抓取**拉勾网**“北京”“数据分析师”30页职位详情数据存入 MySQL 数据库
@@ -22,14 +25,13 @@
 
 
 
-># URL示例
+>### URL示例
 >**搜索页**示例：https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B8%88?city=%E5%8C%97%E4%BA%AC&cl=false&fromSearch=true&labelWords=&suginput=
-
 >**详情页**示例：https://www.lagou.com/jobs/5496895.html
 
 
 # 完整代码
-见 spider_Lagou.py 文件
+见 [spider_Lagou.py](https://github.com/Newyee1994/Graceful-Python/blob/master/Web_Crawler/spider_Lagou.py) 文件
 
 
 # 运行图示
@@ -41,7 +43,7 @@
 
 # 后续优化
 
-- [ ] 1.隐藏浏览器运行界面，避免干扰用户进行其他操作（耗时长，每次重启都会弹出）
+- [x] 1.隐藏浏览器运行界面，避免干扰用户进行其他操作（耗时长，每次重启都会弹出）
 - [ ] 2.将 SearchWord 和 City 作为自定义参数传入 url，便于配置不同需求
 - [ ] 3.直接用 pymysql 操作数据库，不必生成 sql 文件再手动导入
 - [ ] 4.等待时间很长，考虑多线程请求详情页 url 加速（10个一组应该很容易实现）
