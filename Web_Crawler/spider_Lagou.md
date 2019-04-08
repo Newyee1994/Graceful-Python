@@ -1,4 +1,4 @@
->代码见 [spider_Lagou.py](https://github.com/Newyee1994/Graceful-Python/blob/master/Web_Crawler/spider_Lagou.py) 文件
+>代码 &rarr;  [spider_Lagou.py](https://github.com/Newyee1994/Graceful-Python/blob/master/Web_Crawler/spider_Lagou.py) 
 ---
 
 # 需求描述
@@ -26,7 +26,7 @@
 
 
 >### URL示例
->**搜索页**示例：https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B8%88?city=%E5%8C%97%E4%BA%AC&cl=false&fromSearch=true&labelWords=&suginput=
+>**搜索页**示例：https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B8%88?city=%E5%8C%97%E4%BA%AC&cl=false&fromSearch=true&labelWords=&suginput=<br/>
 >**详情页**示例：https://www.lagou.com/jobs/5496895.html
 
 
