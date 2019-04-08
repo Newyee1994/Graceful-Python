@@ -2,4 +2,4 @@
 >My projects learning Python
 ---
 ## Web Crawl
-- [ ] Lagou Positions
+- [x] Lagou Positions

@@ -7,6 +7,7 @@
 """
 
 # 导入相关模块（未安装可执行 pip install xxx 命令安装）
+from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from lxml import etree
 import random
@@ -17,8 +18,12 @@ import time
 class LagouSpider():
 
     def __init__(self):
-        # 初始化类实例时打开谷歌浏览器（可查看测试过程）
-        self.driver = webdriver.Chrome()
+        # # 初始化类实例时打开谷歌浏览器（可查看测试过程）
+        # self.driver = webdriver.Chrome()
+        # 初始化类实例时静默方式打开浏览器(不弹出浏览器页面)
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        self.driver = webdriver.Chrome(chrome_options=chrome_options)
         # 搜索页面的url
         self.url = "https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B8%88?city=%E5%8C%97%E4%BA%AC&cl=false&fromSearch=true&labelWords=&suginput="
         # 存放所有职位详情页的url
@@ -185,7 +190,7 @@ if __name__ == "__main__":
         time.sleep(random.randint(6, 12) * (count // 100 + 1))
         count += 10
         print('-------------------------')
-        print('Have fetched %s positions.' %str(count))
+        print('Have fetched %s positions.\n' %str(count))
 
     # 记录项目结束时间
     end_time = time.time()
