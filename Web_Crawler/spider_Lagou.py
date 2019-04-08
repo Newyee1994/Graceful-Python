@@ -4,11 +4,22 @@
 @Python: 3.6.5
 @selenium: 3.141.0
 @Chrome: 72.0.3626.81
+@Create: 2019-03-15 反反爬、免登录获取「拉勾网」全部职位详情
+@Update: 2019-04-08 静默方式打开浏览器；修复个别 detail_url 页面长时间等待的问题
 """
 
 # 导入相关模块（未安装可执行 pip install xxx 命令安装）
-from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
+# 用于 add_argument('--headless') 等选项设置
+from selenium.webdriver.chrome.options import Options
+# 显示等待
+from selenium.webdriver.support.ui import WebDriverWait
+# 设置等待执行语句
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+# 结束等待
+from selenium.common.exceptions import TimeoutException
+
 from lxml import etree
 import random
 import time
@@ -37,8 +48,17 @@ class LagouSpider():
         '''
         # 遍历每个detail_url
         for link in ten_links:
-            # 调用request_detail_page请求并解析
-            self.request_detail_page(link)
+            # 解决个别 detail_url 打开后长时间等待的问题
+            try:
+                # 调用request_detail_page请求并解析
+                self.request_detail_page(link)
+            except TimeoutError:
+                # 重复请求一次，若仍无法加载则跳过该职位
+                time.sleep(1)
+                try:
+                    self.request_detail_page(link)
+                except TimeoutError:
+                    print('Error Detail URL:', link )
             # 随机间隔3-6s，避免反爬
             time.sleep(random.randint(3, 6))
         # 获取10个职位信息后退出浏览器
@@ -91,20 +111,28 @@ class LagouSpider():
         :param url: 职位详情页url
         :return:
         '''
-        # 在当前窗口中同步执行javascript
-        self.driver.execute_script("window.open('%s')" % url)        # 执行后打开新页面（句柄追加一个新元素）
-        # driver.switch_to.window：将焦点切换到指定的窗口
-        # driver.window_handles：返回当前会话中所有窗口的句柄
-        self.driver.switch_to.window(self.driver.window_handles[1])  # 切换到新打开的窗口，即第2个--index==1
-        source = self.driver.page_source
-        self.parse_detail_page(source)
-        self.driver.close()
-        self.driver.switch_to.window(self.driver.window_handles[0])  # 切换到主窗口（否则不能再次打开新窗口）
+        try:
+            # 在当前窗口中同步执行javascript
+            self.driver.execute_script("window.open('%s')" % url)        # 执行后打开新页面（句柄追加一个新元素）
+            # driver.switch_to.window：将焦点切换到指定的窗口
+            # driver.window_handles：返回当前会话中所有窗口的句柄
+            self.driver.switch_to.window(self.driver.window_handles[1])  # 切换到新打开的窗口，即第2个--index==1
+            # 显式等待5s直到职位名称节点出现（解决打开页面空白无内容、长时间等待问题）
+            WebDriverWait(self.driver, timeout=5).until(
+                    EC.presence_of_element_located((By.XPATH, "//span[@class='name']")))
+            # 获取并解析详情页的网页源代码
+            source = self.driver.page_source
+            self.parse_detail_page(source)
+        except TimeoutException:
+            raise TimeoutError('WebDriverWait out of time!')
+        finally:
+            self.driver.close()
+            self.driver.switch_to.window(self.driver.window_handles[0])  # 切换到主窗口（否则不能再次打开新窗口）
 
     def parse_detail_page(self, source):
         '''
         解析详情页，用xpath提取出需要保存的职位详情信息并保存
-        Xpath语法与lxml库的用法可参考：https://cuiqingcai.com/2621.html
+        Xpath语法与lxml库的用法可自行搜索学习
         :param source: 职位详情页的网页源代码html
         :return:
         '''
@@ -186,7 +214,7 @@ if __name__ == "__main__":
     for ten_links in nested_all_links:
         # 每10个为一组，打开一次浏览器，调用run2方法保存职位详细信息
         LagouSpider().run2(ten_links)
-        # count计数调整间隔时间，请求过多弹出登录
+        # count计数调整间隔时间，避免请求过多弹出登录
         time.sleep(random.randint(6, 12) * (count // 100 + 1))
         count += 10
         print('-------------------------')
