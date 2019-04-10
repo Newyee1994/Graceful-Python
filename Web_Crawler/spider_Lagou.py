@@ -69,7 +69,7 @@ class LagouSpider():
         打开搜索页面，并循环翻页至最后一页，解析html获得all_detail_links
         :return:
         '''
-        # 在当前打开的浏览器中加载页面
+        # 在当前打开的浏览器窗口中加载页面
         self.driver.get(self.url)
         # 用于记录当前是第几页
         count_page = 1
@@ -112,7 +112,7 @@ class LagouSpider():
         :return:
         '''
         try:
-            # 在当前窗口中同步执行javascript
+            # 在当前窗口中同步执行javascript打开新窗口访问url
             self.driver.execute_script("window.open('%s')" % url)        # 执行后打开新页面（句柄追加一个新元素）
             # driver.switch_to.window：将焦点切换到指定的窗口
             # driver.window_handles：返回当前会话中所有窗口的句柄
