@@ -132,7 +132,6 @@ class LagouSpider():
     def parse_detail_page(self, source):
         '''
         解析详情页，用xpath提取出需要保存的职位详情信息并保存
-        Xpath语法与lxml库的用法可自行搜索学习
         :param source: 职位详情页的网页源代码html
         :return:
         '''
@@ -214,11 +213,11 @@ if __name__ == "__main__":
     for ten_links in nested_all_links:
         # 每10个为一组，打开一次浏览器，调用run2方法保存职位详细信息
         LagouSpider().run2(ten_links)
+        print('-------------------------')
+        print('Have fetched %s positions.\n' %str(count))
         # count计数调整间隔时间，避免请求过多弹出登录
         time.sleep(random.randint(6, 12) * (count // 100 + 1))
         count += 10
-        print('-------------------------')
-        print('Have fetched %s positions.\n' %str(count))
 
     # 记录项目结束时间
     end_time = time.time()
