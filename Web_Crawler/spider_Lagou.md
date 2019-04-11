@@ -39,7 +39,7 @@
 ## 运行图示
 ![Alt](https://img-blog.csdnimg.cn/2019031612165073.gif#pic_center)
 <center>Figure1. 请求 PositionAjaxURL 提示</center>
-  
+
 ![程序运行动态演示](https://img-blog.csdnimg.cn/20190318161028944.gif)
 <center>Figure2. 程序运行动态演示</center>
 
