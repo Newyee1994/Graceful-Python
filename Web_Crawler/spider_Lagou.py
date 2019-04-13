@@ -1,11 +1,15 @@
 """
-抓取拉勾网“北京”“数据分析师”30页职位详情数据存入MySQL数据库
+抓取拉勾网“北京”“数据分析师”全部职位详情数据存入MySQL数据库
+@Version: 1.0
 @Author: Newyee
 @Python: 3.6.5
-@selenium: 3.141.0
+@Selenium: 3.141.0
 @Chrome: 72.0.3626.81
 @Create: 2019-03-15 反反爬、免登录获取「拉勾网」全部职位详情
-@Update: 2019-04-08 静默方式打开浏览器；修复个别 detail_url 页面长时间等待的问题
+@Update: 2019-04-08 静默方式打开浏览器；
+                    修复个别 detail_url 页面长时间等待的问题
+@Update: 2019-04-13 配置 SearchWord 和 City 可自定义修改；
+                    增加 startup_browser 方法而不必两次实例化来重启浏览器
 """
 
 # 导入相关模块（未安装可执行 pip install xxx 命令安装）
@@ -19,6 +23,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 # 结束等待
 from selenium.common.exceptions import TimeoutException
+# 对搜索关键词进行 URL 编码
+from urllib.parse import quote
 
 from lxml import etree
 import random
@@ -28,17 +34,20 @@ import time
 # 创建类
 class LagouSpider():
 
-    def __init__(self):
-        # # 初始化类实例时打开谷歌浏览器（可查看测试过程）
+    def __init__(self, search_word, city):
+        # 搜索页面的url
+        self.url = "https://www.lagou.com/jobs/list_%s?city=%s&cl=false&fromSearch=true&labelWords=&suginput=" \
+                   %(quote(search_word), quote(city))
+        # 存放所有职位详情页的url
+        self.all_links = []
+
+    def startup_browser(self):
+        # # 启动谷歌浏览器（可查看测试过程）
         # self.driver = webdriver.Chrome()
-        # 初始化类实例时静默方式打开浏览器(不弹出浏览器页面)
+        # 以静默方式启动浏览器(不弹出浏览器界面)
         chrome_options = Options()
         chrome_options.add_argument('--headless')
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
-        # 搜索页面的url
-        self.url = "https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B8%88?city=%E5%8C%97%E4%BA%AC&cl=false&fromSearch=true&labelWords=&suginput="
-        # 存放所有职位详情页的url
-        self.all_links = []
 
     def run2(self, ten_links):
         '''
@@ -46,6 +55,8 @@ class LagouSpider():
         :param ten_links: 10个职位详情页url组成的list
         :return:
         '''
+        # 启动浏览器
+        self.startup_browser()
         # 遍历每个detail_url
         for link in ten_links:
             # 解决个别 detail_url 打开后长时间等待的问题
@@ -69,6 +80,8 @@ class LagouSpider():
         打开搜索页面，并循环翻页至最后一页，解析html获得all_detail_links
         :return:
         '''
+        # 启动浏览器
+        self.startup_browser()
         # 在当前打开的浏览器窗口中加载页面
         self.driver.get(self.url)
         # 用于记录当前是第几页
@@ -178,11 +191,9 @@ class LagouSpider():
         print('Saved position:', position_id)
 
 
-if __name__ == "__main__":
+def main(search_word, city):
     # 记录项目开始时间
     start_time = time.time()
-    # 数据库中将要创建的表名，可自行修改
-    table_name = 'DataAnalyst_Beijing'
     # 数据库中创建表语句（字段类型设置请自行调整优化，作者目前在这方面经验不多）
     create_table_sql = "CREATE TABLE IF NOT EXISTS %s ( " \
                        "id INT(5) NOT NULL AUTO_INCREMENT, " \
@@ -204,7 +215,8 @@ if __name__ == "__main__":
         f.write(create_table_sql + '\n')
 
     # 实例化LagouSpider类，调用run1方法获取所有职位详情页的url
-    needed_all_links = LagouSpider().run1()
+    spider = LagouSpider(search_word, city)
+    needed_all_links = spider.run1()
 
     # 将所有职位详情url以10位单位拆分成嵌套列表
     nested_all_links = [needed_all_links[i:i + 10] for i in range(0, len(needed_all_links), 10)]
@@ -212,7 +224,7 @@ if __name__ == "__main__":
     # 连续请求10个详情页就会弹出登录页，故每请求10个重启一次浏览器
     for ten_links in nested_all_links:
         # 每10个为一组，打开一次浏览器，调用run2方法保存职位详细信息
-        LagouSpider().run2(ten_links)
+        spider.run2(ten_links)
         print('-------------------------')
         print('Have fetched %s positions.\n' %str(count))
         # count计数调整间隔时间，避免请求过多弹出登录
@@ -222,3 +234,10 @@ if __name__ == "__main__":
     # 记录项目结束时间
     end_time = time.time()
     print('\n【项目完成】\n【总共耗时：%.2f分钟】' %((end_time - start_time) / 60))
+
+
+if __name__ == "__main__":
+    # 数据库中将要创建的表名，可自行修改
+    table_name = 'DataAnalyst_Beijing'
+    # 输入要搜索的「职位/公司等关键词」和「城市名称」，运行主程序
+    main(search_word='数据分析师', city='北京')
