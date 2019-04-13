@@ -1,15 +1,16 @@
 """
-抓取拉勾网“北京”“数据分析师”全部职位详情数据存入MySQL数据库
+抓取「拉勾网」全部职位详情数据存入MySQL数据库（以“北京”“数据分析师”为例）
 @Version: 1.0
 @Author: Newyee
 @Python: 3.6.5
 @Selenium: 3.141.0
 @Chrome: 72.0.3626.81
-@Create: 2019-03-15 反反爬、免登录获取「拉勾网」全部职位详情
-@Update: 2019-04-08 静默方式打开浏览器；
+@Create: 2019-04-05 反反爬、免登录获取「拉勾网」全部职位详情
+@Update: 2019-04-08 静默方式打开浏览器
                     修复个别 detail_url 页面长时间等待的问题
-@Update: 2019-04-13 配置 search_word 和 city 可自定义修改；
+@Update: 2019-04-13 配置 search_word 和 city 可自定义修改
                     增加 startup_browser 方法而不必两次实例化来重启浏览器
+                    增加 main 函数（User-friendly）
 """
 
 # 导入相关模块（未安装可执行 pip install xxx 命令安装）
@@ -237,7 +238,7 @@ def main(search_word, city):
 
 
 if __name__ == "__main__":
-    # 数据库中将要创建的表名，可自行修改
+    # 数据库中将要创建的表名以存储结果，可根据搜索内容自行修改
     table_name = 'DataAnalyst_Beijing'
     # 输入要搜索的「职位/公司等关键词」和「城市名称」，运行主程序
     main(search_word='数据分析师', city='北京')
