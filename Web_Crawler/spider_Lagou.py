@@ -11,7 +11,7 @@
 @Update: 2019-04-13 配置 search_word 和 city 可自定义修改
                     增加 startup_browser 方法而不必两次实例化来重启浏览器
                     增加 main 函数（User-friendly）
-@Update: 2019-04-16 增加「全国」站的city参数
+@Update: 2019-04-16 增加「全国」站的 city 参数
                     提高“健壮性”
 """
 
