@@ -11,6 +11,8 @@
 @Update: 2019-04-13 配置 search_word 和 city 可自定义修改
                     增加 startup_browser 方法而不必两次实例化来重启浏览器
                     增加 main 函数（User-friendly）
+@Update: 2019-04-16 增加「全国」站的city参数
+                    提高“健壮性”
 """
 
 # 导入相关模块（未安装可执行 pip install xxx 命令安装）
@@ -32,13 +34,18 @@ import random
 import time
 
 
+
 # 创建类
 class LagouSpider():
 
     def __init__(self, search_word, city):
         # 搜索页面的url
-        self.url = "https://www.lagou.com/jobs/list_%s?city=%s&cl=false&fromSearch=true&labelWords=&suginput=" \
-                   %(quote(search_word), quote(city))
+        if city in ['全国站', '全国', '']:        # 即「全国站」，不指定城市
+            self.url = "https://www.lagou.com/jobs/list_%s?labelWords=&fromSearch=true&suginput=" \
+                       % (quote(search_word))
+        else:
+            self.url = "https://www.lagou.com/jobs/list_%s?city=%s&cl=false&fromSearch=true&labelWords=&suginput=" \
+                       %(quote(search_word), quote(city))
         # 存放所有职位详情页的url
         self.all_links = []
 
@@ -48,6 +55,7 @@ class LagouSpider():
         # 以静默方式启动浏览器(不弹出浏览器界面)
         chrome_options = Options()
         chrome_options.add_argument('--headless')
+        chrome_options.add_argument('log-level=3')  # 不显示--headless时的日志信息
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
 
     def run2(self, ten_links):
@@ -139,6 +147,9 @@ class LagouSpider():
             self.parse_detail_page(source)
         except TimeoutException:
             raise TimeoutError('WebDriverWait out of time!')
+        # 仍有一两个问题url发生未知错误导致中断（提高“健壮性”）
+        except:
+            print('!!!!!Error Detail URL: %s!!!!!' %url)
         finally:
             self.driver.close()
             self.driver.switch_to.window(self.driver.window_handles[0])  # 切换到主窗口（否则不能再次打开新窗口）
@@ -192,7 +203,7 @@ class LagouSpider():
         print('Saved position:', position_id)
 
 
-def main(search_word, city):
+def main(search_word, city=''):
     # 记录项目开始时间
     start_time = time.time()
     # 数据库中创建表语句（字段类型设置请自行调整优化，作者目前在这方面经验不多）
@@ -237,8 +248,9 @@ def main(search_word, city):
     print('\n【项目完成】\n【总共耗时：%.2f分钟】' %((end_time - start_time) / 60))
 
 
+	
 if __name__ == "__main__":
     # 数据库中将要创建的表名以存储结果，可根据搜索内容自行修改
     table_name = 'DataAnalyst_Beijing'
-    # 输入要搜索的「职位/公司等关键词」和「城市名称」，运行主程序
+    # 输入要搜索的「职位/公司等关键词」和「城市名称或'全国'」，运行主程序
     main(search_word='数据分析师', city='北京')
